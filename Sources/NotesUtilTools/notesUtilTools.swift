@@ -150,7 +150,7 @@ public class NotesUtilTools {
             print("[INFO] nothing archived")
         }
         
-        if archiveTheseLines.count > 0 && journalTheseLines.count > 0 {
+        if archiveTheseLines.count > 0 || journalTheseLines.count > 0 {
             // write the updated todo only after all journaling and archival is successful to avoid data loss, e.g. journaling/archiva fails, but todo has items moved/modified anyway
             do {
                 try writeUpdatedFileAndArchive(atPath: pathToNote, updatedContents: processedTodoFileLines)
@@ -178,6 +178,7 @@ public class NotesUtilTools {
      - returns: a TodoLineAnalysis struct response
      */
     public func analyzeTodoLineItem(line: String) -> TodoLineAnalysis {
+        
         var todoLineStatus = TodoLineAnalysis(isMarkedForArchival: false, isMarkedForJournaling: false)
         // completed?
         if line.starts(with: completedItemsStartWith) {
@@ -198,6 +199,7 @@ public class NotesUtilTools {
      - returns: a new array of lines representing the updated archive/journal file
      */
     public func prependArchive(lines: [String], withNewLines newLines: [String]) -> [String]? {
+                
         var archiveLines = lines
         var blockEndsFound = 0
         let blockEndsString = "+++"
@@ -253,9 +255,9 @@ public class NotesUtilTools {
             do{
                 try FileManager.default.moveItem(atPath: "\(backupPath.path)/\(i)-\(filename)", toPath: "\(backupPath.path)/\(i+1)-\(filename)")
             }catch{
-                print("[ERROR] FULL STOP! We failed to move the current file into the backup dir! Do not risk writing any data!")
+                print("[ERROR] backup file rotation failure, non-critical if older backup files dont already exist.")
+                print("[TODO] handle the case of missing backed up files, this is not a critical failure, move on.")
                 print(error)
-                return
             }
         }
         // remove the retiring (rotated out by age) backup copy
@@ -270,9 +272,9 @@ public class NotesUtilTools {
             print("[INFO] [FileManager.default.moveItem] \(path.path)/\(filename) to \(backupPath.path)/1-\(filename)")
             try FileManager.default.moveItem(atPath: "\(path.path)/\(filename)", toPath: "\(backupPath.path)/1-\(filename)")
         }catch{
-            print("[ERROR] FULL STOP! We failed to move the current file into the backup dir! Do not overwrite the file with new data!")
+            print("[ERROR] FULL STOP! failed to move the current file into the backup dir! Do not overwrite the file with new data!")
             print(error)
-            return
+            exit(1)
         }
         
         print("[INFO] [writeLinesTo] \(path.path)/\(filename) with file contents \(updatedContents)")

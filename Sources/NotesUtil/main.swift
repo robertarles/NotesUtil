@@ -14,7 +14,7 @@ if args.count < 2 {
 }
 
 let sourceFile = args[1]
-print("sourceFile is \(sourceFile)\n")
+print("will process \(sourceFile)\n")
 
 let nut = NotesUtilTools()
 
