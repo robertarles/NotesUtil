@@ -1,6 +1,6 @@
 # NotesUtil
 
-This is my first foray into Swift, my language learning project.
+This is my first foray into Swift, my language learning project (and will not get updated, it's a learning experience only)
 
 I keep my notes and todo list in markdown format. I use Hugo to publish (privately) my notes but needed a way to quickly create archives and journals based on my todo activity.
 
